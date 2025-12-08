@@ -6,47 +6,41 @@ import { factories } from '@strapi/strapi';
 
 export default factories.createCoreController('api::batchmate.batchmate', ({ strapi }) => ({
   async find(ctx) {
+    // Use the default find with populate
+    ctx.query = {
+      ...ctx.query,
+      populate: ctx.query.populate || '*',
+    };
+    
     const { data, meta } = await super.find(ctx);
     return { data, meta };
   },
 
   async findOne(ctx) {
     const { id } = ctx.params;
-    const { query } = ctx;
-
-    const entity = await strapi.entityService.findOne('api::batchmate.batchmate', id, query);
     
-    if (!entity) {
-      return ctx.notFound();
-    }
+    // Use the default findOne with populate
+    ctx.query = {
+      ...ctx.query,
+      populate: ctx.query.populate || '*',
+    };
 
-    const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
-    return this.transformResponse(sanitizedEntity);
+    const response = await super.findOne(ctx);
+    return response;
   },
 
   async create(ctx) {
-    const { data } = await super.create(ctx);
-    return { data };
+    const response = await super.create(ctx);
+    return response;
   },
 
   async update(ctx) {
-    const { id } = ctx.params;
-    const { data } = ctx.request.body;
-
-    const entity = await strapi.entityService.update('api::batchmate.batchmate', id, {
-      data,
-    });
-
-    const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
-    return this.transformResponse(sanitizedEntity);
+    const response = await super.update(ctx);
+    return response;
   },
 
   async delete(ctx) {
-    const { id } = ctx.params;
-
-    const entity = await strapi.entityService.delete('api::batchmate.batchmate', id);
-
-    const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
-    return this.transformResponse(sanitizedEntity);
+    const response = await super.delete(ctx);
+    return response;
   },
 }));
